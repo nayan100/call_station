@@ -117,7 +117,7 @@ Call_Station/
 
 ---
 
-## Design Documents & Interview Defense Guide
+## Design Documents
 
 - **Design Document (D1–D8):** [`design/DESIGN.md`](design/DESIGN.md)
 
