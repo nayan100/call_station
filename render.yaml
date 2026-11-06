@@ -1,0 +1,42 @@
+databases:
+  - name: callstation-db
+    databaseName: callstation
+    user: callstation
+    plan: free
+    region: oregon
+
+services:
+  # 1. Fleet Mock Service (Web service hosting fleet API and /control page)
+  - type: web
+    name: callstation-fleetmock
+    runtime: docker
+    dockerfilePath: ./Dockerfile.fleetmock
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: "8081"
+      - key: FLEET_PORT
+        value: "8081"
+
+  # 2. Call Station Service (Web service hosting /station/:id and /calls)
+  - type: web
+    name: callstation-service
+    runtime: docker
+    dockerfilePath: ./Dockerfile.callservice
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: STATIONS_FILE
+        value: "/app/stations.yaml"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: callstation-db
+          property: connectionString
+      - key: FLEET_URL
+        fromService:
+          type: web
+          name: callstation-fleetmock
+          property: host

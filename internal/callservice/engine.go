@@ -7,6 +7,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -33,10 +34,20 @@ type Engine struct {
 
 // NewEngine creates a new call engine.
 func NewEngine(store *Store, broker *SSEBroker, fleetURL string) *Engine {
+	fleetURL = strings.TrimRight(fleetURL, "/")
+	if !strings.HasPrefix(fleetURL, "http://") && !strings.HasPrefix(fleetURL, "https://") {
+		fleetURL = "http://" + fleetURL
+	}
+	if u, err := url.Parse(fleetURL); err == nil && u.Port() == "" && !strings.Contains(u.Hostname(), ".") && u.Hostname() != "localhost" {
+		// Default to internal port 8081 if only internal service name is provided
+		u.Host = u.Hostname() + ":8081"
+		fleetURL = u.String()
+	}
+
 	return &Engine{
 		store:    store,
 		broker:   broker,
-		fleetURL: strings.TrimRight(fleetURL, "/"),
+		fleetURL: fleetURL,
 		client:   &http.Client{Timeout: dispatchHTTPTimeout},
 	}
 }

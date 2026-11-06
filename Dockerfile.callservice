@@ -7,6 +7,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/callservice ./cmd/callservice
 
 FROM alpine:3.19
 RUN apk add --no-cache ca-certificates
+WORKDIR /app
 COPY --from=builder /bin/callservice /bin/callservice
+COPY --from=builder /app/stations.yaml /app/stations.yaml
 EXPOSE 8080
 ENTRYPOINT ["/bin/callservice"]
