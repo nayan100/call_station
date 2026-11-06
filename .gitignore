@@ -17,6 +17,7 @@ bin/
 .env
 .idea/
 .vscode/
+docs/
 
 # Ignore company confidential PDF prompt
 *.pdf

@@ -6,21 +6,27 @@ A system for warehouse operators to call robots to their station via a web inter
 
 ---
 
+## 🌐 Live Public URLs (Cloud Deployment)
+
+The prototype is deployed on Render.com free tier and accessible at:
+
+| Component | Live Public URL | Local URL |
+|-----------|-----------------|-----------|
+| **Station Page (A1)** (P1) | [https://callstation-service.onrender.com/station/A1](https://callstation-service.onrender.com/station/A1) | `http://localhost:8080/station/A1` |
+| **Station Page (B3)** (P1) | [https://callstation-service.onrender.com/station/B3](https://callstation-service.onrender.com/station/B3) | `http://localhost:8080/station/B3` |
+| **Call Log Page** (P4) | [https://callstation-service.onrender.com/calls](https://callstation-service.onrender.com/calls) | `http://localhost:8080/calls` |
+| **Fleet Mock Control** (P2) | [https://callstation-fleetmock.onrender.com/control](https://callstation-fleetmock.onrender.com/control) | `http://localhost:8081/control` |
+
+> **Note on cold start:** On Render.com's free tier, the first request after inactivity may take ~30 seconds while the service container spins up. This is an expected free-tier behavior, documented here per the assignment requirements.
+
+---
+
 ## Quick Start (Local)
 
 **Single command:**
 ```bash
 docker compose up --build
 ```
-
-| Page | URL |
-|------|-----|
-| Station A1 | http://localhost:8080/station/A1 |
-| Station B3 | http://localhost:8080/station/B3 |
-| Call Log | http://localhost:8080/calls |
-| Fleet Control | http://localhost:8081/control |
-
-> **Note on cold start:** On Render.com's free tier, the first request after inactivity may take ~30 seconds while the service wakes up. This is a free-tier limitation, documented here per the assignment requirements.
 
 ---
 
@@ -45,7 +51,7 @@ TEST_DATABASE_URL="postgres://callstation:callstation@localhost:5432/callstation
 
 ## Fleet Mock Control Page
 
-Navigate to `http://localhost:8081/control` and use the toggles to simulate:
+Navigate to `https://callstation-fleetmock.onrender.com/control` (or `http://localhost:8081/control` locally) and use the toggles to simulate:
 
 | Toggle | Effect |
 |--------|--------|

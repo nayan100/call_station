@@ -36,7 +36,11 @@ type Engine struct {
 func NewEngine(store *Store, broker *SSEBroker, fleetURL string) *Engine {
 	fleetURL = strings.TrimRight(fleetURL, "/")
 	if !strings.HasPrefix(fleetURL, "http://") && !strings.HasPrefix(fleetURL, "https://") {
-		fleetURL = "http://" + fleetURL
+		if strings.Contains(fleetURL, ".") {
+			fleetURL = "https://" + fleetURL
+		} else {
+			fleetURL = "http://" + fleetURL
+		}
 	}
 	if u, err := url.Parse(fleetURL); err == nil && u.Port() == "" && !strings.Contains(u.Hostname(), ".") && u.Hostname() != "localhost" {
 		// Default to internal port 8081 if only internal service name is provided
