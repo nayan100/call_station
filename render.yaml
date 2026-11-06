@@ -36,7 +36,4 @@ services:
           name: callstation-db
           property: connectionString
       - key: FLEET_URL
-        fromService:
-          type: web
-          name: callstation-fleetmock
-          property: host
+        value: "https://callstation-fleetmock.onrender.com"

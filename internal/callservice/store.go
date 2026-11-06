@@ -121,6 +121,11 @@ func runMigrations(db *sql.DB) error {
 		CREATE UNIQUE INDEX IF NOT EXISTS one_open_call_per_station
 		    ON calls (station_id)
 		    WHERE status NOT IN ('arrived', 'failed');
+
+		-- Reset retry_after for in-flight calls on boot so they resume immediately
+		UPDATE calls
+		SET retry_after = now()
+		WHERE status IN ('pending', 'dispatching');
 	`)
 	return err
 }

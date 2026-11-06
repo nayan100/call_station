@@ -42,11 +42,17 @@ func NewEngine(store *Store, broker *SSEBroker, fleetURL string) *Engine {
 			fleetURL = "http://" + fleetURL
 		}
 	}
+	// Force https if domain is onrender.com
+	if strings.HasPrefix(fleetURL, "http://") && strings.Contains(fleetURL, "onrender.com") {
+		fleetURL = "https://" + strings.TrimPrefix(fleetURL, "http://")
+	}
 	if u, err := url.Parse(fleetURL); err == nil && u.Port() == "" && !strings.Contains(u.Hostname(), ".") && u.Hostname() != "localhost" {
 		// Default to internal port 8081 if only internal service name is provided
 		u.Host = u.Hostname() + ":8081"
 		fleetURL = u.String()
 	}
+
+	log.Printf("engine: initialized with fleetURL: %s", fleetURL)
 
 	return &Engine{
 		store:    store,
