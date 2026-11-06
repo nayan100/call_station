@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: callstation-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: callstation
+      POSTGRES_PASSWORD: callstation
+      POSTGRES_DB: callstation
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U callstation"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  fleetmock:
+    build:
+      context: .
+      dockerfile: Dockerfile.fleetmock
+    container_name: callstation-fleet
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      FLEET_PORT: "8081"
+
+  callservice:
+    build:
+      context: .
+      dockerfile: Dockerfile.callservice
+    container_name: callstation-service
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      DATABASE_URL: "postgres://callstation:callstation@db:5432/callstation?sslmode=disable"
+      FLEET_URL: "http://fleetmock:8081"
+      STATIONS_FILE: "/app/stations.yaml"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./stations.yaml:/app/stations.yaml:ro
+
+volumes:
+  pgdata:
