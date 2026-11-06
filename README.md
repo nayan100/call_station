@@ -10,12 +10,12 @@ A system for warehouse operators to call robots to their station via a web inter
 
 The prototype is deployed on Render.com free tier and accessible at:
 
-| Component | Live Public URL | Local URL |
-|-----------|-----------------|-----------|
-| **Station Page (A1)** (P1) | [https://callstation-service.onrender.com/station/A1](https://callstation-service.onrender.com/station/A1) | `http://localhost:8080/station/A1` |
-| **Station Page (B3)** (P1) | [https://callstation-service.onrender.com/station/B3](https://callstation-service.onrender.com/station/B3) | `http://localhost:8080/station/B3` |
-| **Call Log Page** (P4) | [https://callstation-service.onrender.com/calls](https://callstation-service.onrender.com/calls) | `http://localhost:8080/calls` |
-| **Fleet Mock Control** (P2) | [https://callstation-fleetmock.onrender.com/control](https://callstation-fleetmock.onrender.com/control) | `http://localhost:8081/control` |
+| Component                   | Live Public URL                                                                                            | Local URL                          |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| **Station Page (A1)** (P1)  | [https://callstation-service.onrender.com/station/A1](https://callstation-service.onrender.com/station/A1) | `http://localhost:8080/station/A1` |
+| **Station Page (B3)** (P1)  | [https://callstation-service.onrender.com/station/B3](https://callstation-service.onrender.com/station/B3) | `http://localhost:8080/station/B3` |
+| **Call Log Page** (P4)      | [https://callstation-service.onrender.com/calls](https://callstation-service.onrender.com/calls)           | `http://localhost:8080/calls`      |
+| **Fleet Mock Control** (P2) | [https://callstation-fleetmock.onrender.com/control](https://callstation-fleetmock.onrender.com/control)   | `http://localhost:8081/control`    |
 
 > **Note on cold start:** On Render.com's free tier, the first request after inactivity may take ~30 seconds while the service container spins up. This is an expected free-tier behavior, documented here per the assignment requirements.
 
@@ -24,6 +24,7 @@ The prototype is deployed on Render.com free tier and accessible at:
 ## Quick Start (Local)
 
 **Single command:**
+
 ```bash
 docker compose up --build
 ```
@@ -53,12 +54,12 @@ TEST_DATABASE_URL="postgres://callstation:callstation@localhost:5432/callstation
 
 Navigate to `https://callstation-fleetmock.onrender.com/control` (or `http://localhost:8081/control` locally) and use the toggles to simulate:
 
-| Toggle | Effect |
-|--------|--------|
-| **Slow Replies** | Adds 5s delay to dispatch, 3s to mission queries |
+| Toggle                        | Effect                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------ |
+| **Slow Replies**              | Adds 5s delay to dispatch, 3s to mission queries                         |
 | **Reply Lost After Dispatch** | Mission is created but HTTP response is dropped (simulates network drop) |
-| **Fleet Unavailable** | All endpoints return 503 |
-| **Always Busy** | Dispatch returns 409 with `retryAfterSeconds=10` |
+| **Fleet Unavailable**         | All endpoints return 503                                                 |
+| **Always Busy**               | Dispatch returns 409 with `retryAfterSeconds=10`                         |
 
 The mission list auto-refreshes every 5 seconds showing all missions and their current status.
 
@@ -100,38 +101,38 @@ Call_Station/
 ## Environment Variables
 
 ### Call Service
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | `8080` | HTTP port |
-| `DATABASE_URL` | `postgres://callstation:callstation@localhost:5432/callstation?sslmode=disable` | PostgreSQL DSN |
-| `FLEET_URL` | `http://localhost:8081` | Fleet mock base URL |
-| `STATIONS_FILE` | `stations.yaml` | Path to station config |
+
+| Variable        | Default                                                                         | Description            |
+| --------------- | ------------------------------------------------------------------------------- | ---------------------- |
+| `PORT`          | `8080`                                                                          | HTTP port              |
+| `DATABASE_URL`  | `postgres://callstation:callstation@localhost:5432/callstation?sslmode=disable` | PostgreSQL DSN         |
+| `FLEET_URL`     | `http://localhost:8081`                                                         | Fleet mock base URL    |
+| `STATIONS_FILE` | `stations.yaml`                                                                 | Path to station config |
 
 ### Fleet Mock
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `FLEET_PORT` | `8081` | HTTP port |
+
+| Variable     | Default | Description |
+| ------------ | ------- | ----------- |
+| `FLEET_PORT` | `8081`  | HTTP port   |
 
 ---
 
 ## Design Documents & Interview Defense Guide
 
 - **Design Document (D1–D8):** [`design/DESIGN.md`](design/DESIGN.md)
-- **Comprehensive Architecture & 45-Min Interview Defense Guide:** [`docs/SYSTEM_DESIGN_AND_DISCUSSION_GUIDE.md`](docs/SYSTEM_DESIGN_AND_DISCUSSION_GUIDE.md)
-- **Initial Assignment Breakdown & Planning:** [`docs/initial_artifact.md`](docs/initial_artifact.md)
 
 ---
 
 ## Differences Between Prototype and Design
 
-| Design Specification | Prototype Implementation | Reason |
-|---------------------|--------------------------|--------|
-| **mTLS** (client certificates per station) | Pre-shared Bearer token per station | mTLS requires a CA, cert issuance infrastructure, and TLS termination — out of scope for a 6-hour prototype |
-| **Horizontal scaling** with sticky sessions | Single-process instance | Render.com free tier; single-process sufficient for prototype |
-| **Prometheus metrics** | Structured logging only | No monitoring infra needed for prototype review |
-| **Redis Pub/Sub** for multi-instance SSE | In-process SSE broker (channel per subscriber) | Single instance makes distributed broker unnecessary |
-| **OTA firmware updates** | N/A (no hardware) | Out of scope per assignment |
-| **Priority queue** for station scheduling | FIFO by `created_at` | Simple queue sufficient for ≤10 stations in prototype |
+| Design Specification                        | Prototype Implementation                       | Reason                                                                                                      |
+| ------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **mTLS** (client certificates per station)  | Pre-shared Bearer token per station            | mTLS requires a CA, cert issuance infrastructure, and TLS termination — out of scope for a 6-hour prototype |
+| **Horizontal scaling** with sticky sessions | Single-process instance                        | Render.com free tier; single-process sufficient for prototype                                               |
+| **Prometheus metrics**                      | Structured logging only                        | No monitoring infra needed for prototype review                                                             |
+| **Redis Pub/Sub** for multi-instance SSE    | In-process SSE broker (channel per subscriber) | Single instance makes distributed broker unnecessary                                                        |
+| **OTA firmware updates**                    | N/A (no hardware)                              | Out of scope per assignment                                                                                 |
+| **Priority queue** for station scheduling   | FIFO by `created_at`                           | Simple queue sufficient for ≤10 stations in prototype                                                       |
 
 ---
 
